@@ -5,22 +5,22 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=20" };
-static const char dmenufont[]       = "monospace:size=20";
-static const char col_gray1[]       = "#303F54";
+static const char *fonts[]          = { "monospace:size=10" };
+static const char dmenufont[]       = "monospace:size=10";
+static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#3E6195";
-static const char col_gray4[]       = "#3B485B";
-static const char col_cyan[]        = "#eeeeee";
+static const char col_gray3[]       = "#bbbbbb";
+static const char col_gray4[]       = "#eeeeee";
+static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
-	[SchemeStatus]  = { col_gray3, col_gray1,  "#FF4747"  }, // Statusbar right {text,background,not used but cannot be empty}
-	[SchemeTagsSel]  = { col_gray4, col_cyan,  "#FF4747"  }, // Tagbar left selected {text,background,not used but cannot be empty}
-    [SchemeTagsNorm]  = { col_gray3, col_gray1,  "#FF4747"  }, // Tagbar left unselected {text,background,not used but cannot be empty}
-    [SchemeInfoSel]  = { col_gray4, col_cyan,  "#FF4747"  }, // infobar middle  selected {text,background,not used but cannot be empty}
-    [SchemeInfoNorm]  = { col_gray3, col_gray1,  "#FF4747"  }, // infobar middle  unselected {text,background,not used but cannot be empty}								 // 
+	[SchemeStatus]  = { col_gray3, col_gray1,  "#000000"  }, // Statusbar right {text,background,not used but cannot be empty}
++	[SchemeTagsSel]  = { col_gray4, col_cyan,  "#000000"  }, // Tagbar left selected {text,background,not used but cannot be empty}
++    [SchemeTagsNorm]  = { col_gray3, col_gray1,  "#000000"  }, // Tagbar left unselected {text,background,not used but cannot be empty}
++    [SchemeInfoSel]  = { col_gray4, col_cyan,  "#000000"  }, // infobar middle  selected {text,background,not used but cannot be empty}
++    [SchemeInfoNorm]  = { col_gray3, col_gray1,  "#000000"  }, // infobar middle  unselected {text,background,not used but cannot be empty}								 // 
 								 // 
 };
 
@@ -52,7 +52,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod4Mask
+#define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -65,28 +65,22 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "kitty", NULL};
-static const char *nvim[] = {"kitty", "nvim", NULL};
-static const char *browser[] = {"librewolf", NULL};
-static const char *launcher[] = {"rofi", "-show", "drun" };
-static const char *bg[] = {"./fehbg", NULL};
+static const char *termcmd[]  = { "st", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_Return, 	spawn,     {.v = termcmd } },
-	{ MODKEY,                       XK_c,      spawn,     {.v = browser } },
-	{ MODKEY,                       XK_d,      spawn,     {.v = launcher } },
-	{ MODKEY,                       XK_o,      spawn,     {.v = nvim } },
-
+	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
+	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY|ShiftMask,             XK_q,      killclient,     {0} },
+	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
@@ -107,8 +101,9 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask, 		XK_e, 	quit,		{0}},
-	 };
+	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+};
+
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static const Button buttons[] = {
