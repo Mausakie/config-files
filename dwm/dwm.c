@@ -139,6 +139,13 @@ typedef struct {
 	int isfloating;
 	int monitor;
 } Rule;
+typedef struct {
+	const char **cmd;
+	unsigned int tags;
+} Autostarttag;
+
+
+
 
 /* function declarations */
 static void applyrules(Client *c);
@@ -206,6 +213,8 @@ static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void spawn(const Arg *arg);
+static void autostarttagsspawner(void);
+static void applyautostarttags(Client *c);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *m);
@@ -267,6 +276,11 @@ static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
+static unsigned int autostarttags = 0;
+static int autostartcomplete = 0;
+static int autostartcmdscomplete = 0;
+
+
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -1075,7 +1089,13 @@ manage(Window w, XWindowAttributes *wa)
 		c->tags = t->tags;
 	} else {
 		c->mon = selmon;
-		applyrules(c);
+		if (autostarttags) {
+			applyautostarttags(c);
+		} else {
+			applyrules(c);
+		}
+
+
 	}
 
 	if (c->x + WIDTH(c) > c->mon->wx + c->mon->ww)
@@ -1427,9 +1447,13 @@ run(void)
 	XEvent ev;
 	/* main event loop */
 	XSync(dpy, False);
-	while (running && !XNextEvent(dpy, &ev))
+	while (running && !XNextEvent(dpy, &ev)){
+		if (!(autostartcomplete || autostarttags))
+			autostarttagsspawner();
 		if (handler[ev.type])
 			handler[ev.type](&ev); /* call handler */
+
+	}
 }
 
 
@@ -1729,6 +1753,38 @@ tag(const Arg *arg)
 		arrange(selmon);
 	}
 }
+
+void
+autostarttagsspawner(void)
+{
+	int i;
+	Arg arg;
+
+	for (i = autostartcmdscomplete; i < LENGTH(autostarttaglist) ; i++){
+		autostartcmdscomplete += 1;
+		autostarttags = autostarttaglist[i].tags;
+		arg.v = autostarttaglist[i].cmd ;
+		spawn(&arg);
+		return;
+	}
+	autostartcomplete = 1;
+	return;
+}
+
+void
+applyautostarttags(Client *c)
+{
+	if (!c)
+		return;
+	c->tags = autostarttags;
+	autostarttags = 0;
+	return;
+}
+
+
+
+
+
 
 void
 tagmon(const Arg *arg)

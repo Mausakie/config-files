@@ -10,7 +10,7 @@ static const int topbar             = 1;        /* 0 means bottom bar */
 
 
 static const char *fonts[]          = { "FantasqueSansM Nerd Font:size=50" };
-static const char dmenufont[]       = "SymbolsNF:size=20";
+static const char dmenufont[]       = "SymbolsNF:size=10";
 static const char col_gray1[]       = "#303F54";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#3E6195";
@@ -29,7 +29,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "󰖟", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "", "󰖟", "󰍪", "","",""};
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -72,15 +72,26 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *termcmd[]  = { "st", NULL};
 static const char *nvim[] = {"st", "nvim", NULL};
 static const char *browser[] = {"librewolf", NULL};
-static const char *launcher[] = {"rofi", "-show", "drun" };
+//static const char *kdenlive[] = {"flatpak", "run", "org.kde.kdenlive",  NULL};
+static const char *language[] = {"L-switcher", NULL};
+// static const char *launcher[] = {"rofi", "-show", "drun" };
+
+Autostarttag autostarttaglist[] = {
+	{.cmd = browser, .tags = 1 << 1 },
+	{.cmd = termcmd, .tags = 1 << 0 },
+	{.cmd = NULL, .tags = 0 },
+};
+
+
+
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, 	spawn,     {.v = termcmd } },
 	{ MODKEY,                       XK_c,      spawn,     {.v = browser } },
-	{ MODKEY,                       XK_d,      spawn,     {.v = launcher } },
 	{ MODKEY,                       XK_o,      spawn,     {.v = nvim } },
+	{ MODKEY,			XK_p,	spawn, {.v = language } },
 
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
